@@ -314,7 +314,8 @@ const C2PI=2*Math.PI*42,RT_C=2*Math.PI*44,PROT_GOAL=170,PREP_START=pdLocal("2026
 let workRecs=[],bodyRecs=[],nutrRecs=[],hikeRecs=[],curW=null,curEx=null;
 function parse(r){if(!r)return {records:[]};if(r.isError)throw new Error("e");let d=r.structuredContent;if(!d&&r.content&&r.content[0]&&r.content[0].text){try{d=JSON.parse(r.content[0].text);}catch(e){d={records:[]};}}return d||{records:[]};}
 let AT_TOKEN=(typeof localStorage!=="undefined"&&localStorage.getItem("cf_token"))||"";
-function ensureToken(){if(!AT_TOKEN){const t=prompt("Paste your Airtable token (stored only on THIS device):");if(t){AT_TOKEN=t.trim();try{localStorage.setItem("cf_token",AT_TOKEN);}catch(e){}}}return AT_TOKEN;}
+var TOKEN_ASKED=false;
+function ensureToken(){if(!AT_TOKEN&&!TOKEN_ASKED){TOKEN_ASKED=true;const t=prompt("Paste your Airtable token (stored only on THIS device):");if(t){AT_TOKEN=t.trim();try{localStorage.setItem("cf_token",AT_TOKEN);}catch(e){}}}return AT_TOKEN;}
 async function atFetch(u,o){const r=await fetch(u,Object.assign({},o,{headers:Object.assign({Authorization:"Bearer "+ensureToken(),"Content-Type":"application/json"},(o&&o.headers)||{})}));if(!r.ok){if(r.status===401||r.status===403)AUTH_FAIL=true;throw new Error("AT "+r.status);}return r.json();}
 async function call(t,a){const base="https://api.airtable.com/v0/"+a.baseId+"/"+a.tableId;
  if(t==="list_records_for_table"){let recs=[],offset=null;do{let u=base+"?returnFieldsByFieldId=true&pageSize=100"+(offset?"&offset="+encodeURIComponent(offset):"");const j=await atFetch(u);recs=recs.concat(j.records||[]);offset=j.offset;}while(offset);
@@ -584,7 +585,7 @@ function shiftDay(n){var b=pdLocal(curDate())||new Date();b.setDate(b.getDate()+
 document.getElementById("d-prev").onclick=function(){shiftDay(-1);};
 document.getElementById("d-next").onclick=function(){shiftDay(1);};
 document.getElementById("d-today").onclick=function(){document.getElementById("date").value=ymd(new Date());dateRefresh();};
-(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V12 · UP TO DATE";swShow();renderPick();rtShow();})();
+(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V13 · UP TO DATE";swShow();renderPick();rtShow();})();
 ensureToken();loadAll().then(()=>{renderPick();buildDash();});
 </script>
 <script>
