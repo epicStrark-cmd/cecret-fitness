@@ -278,7 +278,7 @@ textarea{min-height:50px;resize:vertical}
     <div class="hint">Calories out = BMR (~1,844) + active calories. An estimate to guide deficit, not a precise number.</div>
   </div>
   <div class="card">
-    <div class="chatnote">🍽 <b>Log a meal — no typing, no math.</b> Snap a photo of your food or just say what you ate, and Claude logs it for you.</div><a href="https://claude.ai/project/01a0a47c-1d7a-7032-b08c-437df34d8a28" target="_blank" rel="noopener" id="m-openchat" style="display:block;text-decoration:none;text-align:center;margin-top:14px;background:var(--gold);color:#1a1a1a;font-size:18px;font-weight:800;padding:18px;border-radius:14px">📸 Log a Meal</a><button id="m-refresh" class="save" style="margin-top:12px">↻ Refresh data</button><div id="m-sync" style="margin-top:8px;color:var(--muted);font-size:11px"></div>
+    <div class="chatnote">🍽 <b>Log a meal — no typing, no math.</b> Snap a photo of your food or just say what you ate, and Claude logs it for you.</div><a href="https://claude.ai/project/019ee2be-7fd6-71f3-b37f-6ae0c9c98c87" target="_blank" rel="noopener" id="m-openchat" style="display:block;text-decoration:none;text-align:center;margin-top:14px;background:var(--gold);color:#1a1a1a;font-size:18px;font-weight:800;padding:18px;border-radius:14px">📸 Log a Meal</a><button id="m-refresh" class="save" style="margin-top:12px">↻ Refresh data</button><div id="m-sync" style="margin-top:8px;color:var(--muted);font-size:11px"></div>
   </div>
 </section>
 </div>
@@ -598,7 +598,7 @@ function shiftDay(n){var b=pdLocal(curDate())||new Date();b.setDate(b.getDate()+
 document.getElementById("d-prev").onclick=function(){shiftDay(-1);};
 document.getElementById("d-next").onclick=function(){shiftDay(1);};
 document.getElementById("d-today").onclick=function(){document.getElementById("date").value=ymd(new Date());dateRefresh();};
-(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V19 · UP TO DATE";swShow();renderPick();rtShow();})();
+(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V20 · UP TO DATE";swShow();renderPick();rtShow();})();
 loadAll().then(()=>{renderPick();buildDash();});
 </script>
 <script>
