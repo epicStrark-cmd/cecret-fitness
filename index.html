@@ -313,17 +313,10 @@ ICONS.mountain='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 const C2PI=2*Math.PI*42,RT_C=2*Math.PI*44,PROT_GOAL=170,PREP_START=pdLocal("2026-09-22"),BHUTAN=pdLocal("2026-10-13");
 let workRecs=[],bodyRecs=[],nutrRecs=[],hikeRecs=[],curW=null,curEx=null;
 function parse(r){if(!r)return {records:[]};if(r.isError)throw new Error("e");let d=r.structuredContent;if(!d&&r.content&&r.content[0]&&r.content[0].text){try{d=JSON.parse(r.content[0].text);}catch(e){d={records:[]};}}return d||{records:[]};}
-let AT_TOKEN=(typeof localStorage!=="undefined"&&localStorage.getItem("cf_token"))||"";
-var TOKEN_ASKED=false;
-function ensureToken(){if(!AT_TOKEN&&!TOKEN_ASKED){TOKEN_ASKED=true;const t=prompt("Paste your Airtable token (stored only on THIS device):");if(t){AT_TOKEN=t.trim();try{localStorage.setItem("cf_token",AT_TOKEN);}catch(e){}}}return AT_TOKEN;}
-async function atFetch(u,o){const r=await fetch(u,Object.assign({},o,{headers:Object.assign({Authorization:"Bearer "+ensureToken(),"Content-Type":"application/json"},(o&&o.headers)||{})}));if(!r.ok){if(r.status===401||r.status===403)AUTH_FAIL=true;throw new Error("AT "+r.status);}return r.json();}
-async function call(t,a){const base="https://api.airtable.com/v0/"+a.baseId+"/"+a.tableId;
- if(t==="list_records_for_table"){let recs=[],offset=null;do{let u=base+"?returnFieldsByFieldId=true&pageSize=100"+(offset?"&offset="+encodeURIComponent(offset):"");const j=await atFetch(u);recs=recs.concat(j.records||[]);offset=j.offset;}while(offset);
-  if(a.sort&&a.sort[0]){const sf=a.sort[0].fieldId,dir=a.sort[0].direction==="desc"?-1:1;recs.sort((x,y)=>{const p=(x.fields||{})[sf],q=(y.fields||{})[sf];return p<q?-dir:(p>q?dir:0);});}
-  return {records:recs};}
- if(t==="create_records_for_table"){return await atFetch(base+"?returnFieldsByFieldId=true",{method:"POST",body:JSON.stringify({records:a.records,typecast:true})});}
- if(t==="update_records_for_table"){return await atFetch(base+"?returnFieldsByFieldId=true",{method:"PATCH",body:JSON.stringify({records:a.records,typecast:true})});}
- return {records:[]};}
+const ENGINE_URL="https://script.google.com/macros/s/AKfycby_EnxaiMC6NeiOU13KMzkYFTLrqGD4GtJknsfWvmpCVeX6olCke24MiWZV-4Jr0GfNvw/exec";
+const ENGINE_KEY="cf_9f3k2x7q";
+function jsonp(params){return new Promise(function(resolve,reject){var cb="cf_cb_"+Date.now()+"_"+Math.floor(Math.random()*1e6);var s;var to=setTimeout(function(){cleanup();reject(new Error("timeout"));},20000);function cleanup(){clearTimeout(to);try{delete window[cb];}catch(e){}if(s&&s.parentNode)s.parentNode.removeChild(s);}window[cb]=function(d){cleanup();resolve(d);};s=document.createElement("script");s.onerror=function(){cleanup();reject(new Error("neterr"));};s.src=ENGINE_URL+"?key="+ENGINE_KEY+"&callback="+cb+"&"+params;document.body.appendChild(s);});}
+async function saveRec(table,fields,upsertOn){var params="action=write&table="+table+"&record="+encodeURIComponent(JSON.stringify({fields:fields}));if(upsertOn)params+="&upsertOn="+upsertOn;var rec=await jsonp(params);if(rec&&rec.error)throw new Error(rec.error);return rec;}
 function cv(r){return r.cellValuesByFieldId||r.fields||{};}
 function pad(n){return n<10?"0"+n:""+n;}
 function curDate(){return document.getElementById("date").value;}
@@ -331,14 +324,16 @@ var OFFLINE=false;var AUTH_FAIL=false;
 async function cget(key,args){try{const r=(await call("list_records_for_table",args)).records||[];try{localStorage.setItem("cf_cache_"+key,JSON.stringify(r));localStorage.setItem("cf_synced",new Date().toISOString());}catch(e){}return r;}catch(e){OFFLINE=true;try{return JSON.parse(localStorage.getItem("cf_cache_"+key))||[];}catch(_){return [];}}}
 function renderOfflineBanner(){try{var el=document.getElementById("offbar");if(!el){el=document.createElement("div");el.id="offbar";el.style.cssText="display:none;position:fixed;left:0;right:0;top:0;z-index:9999;font:700 12px -apple-system,BlinkMacSystemFont,sans-serif;text-align:center;padding:calc(env(safe-area-inset-top,0px) + 7px) 12px 7px;cursor:pointer";document.body.appendChild(el);}if(AUTH_FAIL){el.style.background="#3a0d0d";el.style.color="#ff9a9a";el.textContent="🔑 Tap to reconnect — paste your Airtable token";el.onclick=reconnect;el.style.display="block";}else if(OFFLINE){el.style.background="#3a2d00";el.style.color="#ffd34d";var s=localStorage.getItem("cf_synced");var t=s?new Date(s).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"earlier";var hasData=(workRecs&&workRecs.length)||(nutrRecs&&nutrRecs.length);el.textContent=hasData?("⚡ Offline — data from "+t+" · tap to retry"):"⚡ Couldn't load — tap to retry";el.onclick=retryLoad;el.style.display="block";}else{el.style.display="none";el.onclick=null;}}catch(e){}}
 async function retryLoad(){try{await loadAll();renderPick();buildDash();try{renderMeals();}catch(e){}}catch(e){}}
-async function reconnect(){try{localStorage.removeItem("cf_token");}catch(e){}AT_TOKEN="";var t=prompt("Paste your Airtable token (stored only on THIS device):");if(t&&t.trim()){AT_TOKEN=t.trim();try{localStorage.setItem("cf_token",AT_TOKEN);}catch(e){}AUTH_FAIL=false;try{await loadAll();renderPick();buildDash();try{renderMeals();}catch(e){}}catch(e){}}}
+async function reconnect(){await retryLoad();}
 async function loadAll(){
   OFFLINE=false;AUTH_FAIL=false;
-  workRecs=await cget("work",{baseId:BASE,tableId:T_WORK,pageSize:1000,sort:[{fieldId:F.date,direction:"asc"}]});
-  bodyRecs=await cget("body",{baseId:BASE,tableId:T_BODY,pageSize:1000,sort:[{fieldId:BF.date,direction:"asc"}]});
-  nutrRecs=await cget("nutr",{baseId:BASE,tableId:T_NUTR,pageSize:1000,sort:[{fieldId:NF.date,direction:"asc"}]});
-  hikeRecs=await cget("hike",{baseId:BASE,tableId:T_HIKE,pageSize:1000,sort:[{fieldId:HK.date,direction:"asc"}]});
-  reflRecs=await cget("refl",{baseId:BASE,tableId:T_REFL,pageSize:1000});
+  try{
+    var r=await jsonp("action=read");
+    if(!r||r.error)throw new Error(r&&r.error||"read");
+    function bd(a,fid){return (a||[]).sort(function(x,y){var p=(x.cellValuesByFieldId||{})[fid]||"",q=(y.cellValuesByFieldId||{})[fid]||"";return p<q?-1:(p>q?1:0);});}
+    workRecs=bd(r.work,F.date);bodyRecs=bd(r.body,BF.date);nutrRecs=bd(r.nutr,NF.date);hikeRecs=bd(r.hike,HK.date);reflRecs=r.refl||[];
+    try{localStorage.setItem("cf_all",JSON.stringify(r));localStorage.setItem("cf_synced",new Date().toISOString());}catch(e){}
+  }catch(e){OFFLINE=true;try{var c=JSON.parse(localStorage.getItem("cf_all"));if(c){workRecs=c.work||[];bodyRecs=c.body||[];nutrRecs=c.nutr||[];hikeRecs=c.hike||[];reflRecs=c.refl||[];}}catch(_){}}
   renderOfflineBanner();
 }
 function recName(c){const e=c[F.ex];return e&&e.name?e.name:e;}
@@ -405,7 +400,7 @@ async function doneEx(){
   if(wt===""&&reps===""){st.style.color="var(--bad)";st.textContent="Enter a weight or reps.";return;}
   const f={[F.date]:curDate(),[F.workout]:curW,[F.ex]:x[0]};if(wt!=="")f[F.wt]=parseFloat(wt);if(reps!=="")f[F.reps]=parseInt(reps);if(sets!=="")f[F.sets]=parseInt(sets);Object.assign(f,sessFields());
   btn.disabled=true;st.style.color="rgba(255,255,255,.8)";st.textContent="Saving...";
-  try{await call("create_records_for_table",{baseId:BASE,tableId:T_WORK,records:[{fields:f}]});workRecs.push({cellValuesByFieldId:f});renderPick();rtStop();renderExlist();show("scr-list");toast(x[0]+" logged ✓");}
+  try{var _rec=await saveRec("work",f);workRecs.push(_rec);renderPick();rtStop();renderExlist();show("scr-list");toast(x[0]+" logged ✓");}
   catch(e){st.style.color="var(--bad)";st.textContent="Couldn't save — try again.";btn.disabled=false;}
 }
 function openHike(){document.getElementById("h-date").value=curDate()||ymd(new Date());show("scr-hike");}
@@ -419,7 +414,7 @@ async function saveHike(){
   const n=document.getElementById("h-notes").value.trim();if(n)f[HK.notes]=n;
   if(Object.keys(f).length<=1){st.style.color="var(--bad)";st.textContent="Add at least distance or time.";return;}
   const btn=document.getElementById("hike-save");btn.disabled=true;st.style.color="var(--muted)";st.textContent="Saving...";
-  try{await call("create_records_for_table",{baseId:BASE,tableId:T_HIKE,records:[{fields:f}]});hikeRecs.push({cellValuesByFieldId:f});st.style.color="var(--good)";st.textContent="✓ Hike logged! Strong work.";buildDash();setTimeout(()=>{btn.disabled=false;show("scr-pick");},900);}
+  try{var _hr=await saveRec("hike",f);hikeRecs.push(_hr);st.style.color="var(--good)";st.textContent="✓ Hike logged! Strong work.";buildDash();setTimeout(()=>{btn.disabled=false;show("scr-pick");},900);}
   catch(e){st.style.color="var(--bad)";st.textContent="Couldn't save — try again.";btn.disabled=false;}
 }
 let hswEl=0,hswT=null;function hswShow(){document.getElementById("hsw").textContent=pad(Math.floor(hswEl/60))+":"+pad(hswEl%60);}
@@ -511,7 +506,7 @@ function saveReflection(sunymd,mon,sunLabel,stats,reflRec){
   st.style.color='var(--muted)';st.textContent='Saving…';
   var label=fmtMD(mon)+' - '+fmtMD(sunLabel)+', '+mon.getFullYear();
   var fields={};fields[RF.week]=label;fields[RF.ending]=sunymd;fields[RF.workouts]=stats.trainDays;fields[RF.protdays]=stats.protDays;if(stats.avgDef!=null)fields[RF.avgdef]=stats.avgDef;if(stats.wtChg!=null)fields[RF.wtchg]=Math.round(stats.wtChg*10)/10;fields[RF.refl]=txt;
-  var p=(reflRec&&reflRec.id)?call("update_records_for_table",{baseId:BASE,tableId:T_REFL,records:[{id:reflRec.id,fields:fields}]}):call("create_records_for_table",{baseId:BASE,tableId:T_REFL,records:[{fields:fields}]});
+  var p=saveRec("refl",fields,"fldlPifFl2NjOjiBt");
   p.then(function(){st.style.color='var(--good)';st.textContent='✓ Saved';loadAll().then(function(){buildWeekReview();});}).catch(function(){st.style.color='var(--bad)';st.textContent='Couldn’t save — check signal.';});
 }
 
@@ -585,8 +580,8 @@ function shiftDay(n){var b=pdLocal(curDate())||new Date();b.setDate(b.getDate()+
 document.getElementById("d-prev").onclick=function(){shiftDay(-1);};
 document.getElementById("d-next").onclick=function(){shiftDay(1);};
 document.getElementById("d-today").onclick=function(){document.getElementById("date").value=ymd(new Date());dateRefresh();};
-(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V13 · UP TO DATE";swShow();renderPick();rtShow();})();
-ensureToken();loadAll().then(()=>{renderPick();buildDash();});
+(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V14 · UP TO DATE";swShow();renderPick();rtShow();})();
+loadAll().then(()=>{renderPick();buildDash();});
 </script>
 <script>
 if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
