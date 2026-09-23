@@ -339,6 +339,10 @@ async function loadAll(){
 function recName(c){const e=c[F.ex];return e&&e.name?e.name:e;}
 function lastWeight(ex){let best=null,bd="";workRecs.forEach(r=>{const c=cv(r);if(recName(c)===ex&&c[F.wt]!=null){const d=c[F.date]||"";if(d>=bd){bd=d;best=c[F.wt];}}});return best;}
 function lastEntry(ex){let best=null,bd="";const today=curDate();workRecs.forEach(r=>{const c=cv(r);if(recName(c)===ex){const d=c[F.date]||"";if(d>=bd){bd=d;best={wt:c[F.wt],reps:c[F.reps],sets:c[F.sets]};}}});return best;}
+var RAMP=[{s:"2026-09-23",e:"2026-09-29",pct:0.55,sets:2,reps:14,lab:"Week 1 · wake it up (~55% — leave reps in the tank)"},{s:"2026-09-30",e:"2026-10-06",pct:0.72,sets:3,reps:11,lab:"Week 2 · rebuild (~72%)"},{s:"2026-10-07",e:"2026-10-12",pct:0.83,sets:3,reps:10,lab:"Week 3 · groove (~83%)"}];
+var BASELINE={"Overhead Press":88,"Hip Thrust":44,"Tib Bar Raises":25,"Goblet Squat":44,"Bench Press":88,"Single-Arm Row":44,"Romanian Deadlift":88,"Thrusters":88,"Chest-Supported Row":88,"Dumbbell Curls":20,"Triceps Extensions":40};
+function curRamp(){var d=curDate();for(var i=0;i<RAMP.length;i++){if(d>=RAMP[i].s&&d<=RAMP[i].e)return RAMP[i];}return null;}
+function round5(n){return Math.max(5,Math.round(n/5)*5);}
 function isDone(ex){const d=curDate();return workRecs.some(r=>{const c=cv(r);return c[F.date]===d&&(c[F.workout]&&c[F.workout].name?c[F.workout].name:c[F.workout])===curW&&recName(c)===ex;});}
 function dayEntry(ex){const d=curDate();let out=null;workRecs.forEach(r=>{const c=cv(r);const wl=c[F.workout]&&c[F.workout].name?c[F.workout].name:c[F.workout];if(c[F.date]===d&&wl===curW&&recName(c)===ex){out={wt:c[F.wt],reps:c[F.reps],sets:c[F.sets]};}});return out;}
 function numv(id){const v=document.getElementById(id).value;return v===""?null:parseFloat(v);}
@@ -388,6 +392,14 @@ function openEx(i){
   document.getElementById("ex-wt").value=lw!=null?lw:"";document.getElementById("ex-wt").placeholder=lw!=null?lw:"--";
   document.getElementById("ex-reps").value=le&&le.reps!=null?le.reps:"";document.getElementById("ex-reps").placeholder=le&&le.reps!=null?le.reps:"reps";
   document.getElementById("ex-sets").value=le&&le.sets!=null?le.sets:"3";
+  var _rmp=curRamp();
+  if(_rmp){
+    var _base=BASELINE[x[0]];
+    if(_base&&_base>0)document.getElementById("ex-wt").value=round5(_base*_rmp.pct);
+    document.getElementById("ex-reps").value=_rmp.reps;
+    document.getElementById("ex-sets").value=_rmp.sets;
+    document.getElementById("ex-last").textContent="🌴 "+_rmp.lab;
+  }
   const btn=document.getElementById("ex-done"),st=document.getElementById("ex-status");btn.disabled=false;btn.textContent="✓ Done";st.textContent="";
   ["ex-wt","ex-reps","ex-sets"].forEach(id=>document.getElementById(id).disabled=false);
   if(isDone(x[0])){st.style.color="var(--good)";st.textContent="Already logged today — save again to add another entry.";}
@@ -580,7 +592,7 @@ function shiftDay(n){var b=pdLocal(curDate())||new Date();b.setDate(b.getDate()+
 document.getElementById("d-prev").onclick=function(){shiftDay(-1);};
 document.getElementById("d-next").onclick=function(){shiftDay(1);};
 document.getElementById("d-today").onclick=function(){document.getElementById("date").value=ymd(new Date());dateRefresh();};
-(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V14 · UP TO DATE";swShow();renderPick();rtShow();})();
+(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V15 · UP TO DATE";swShow();renderPick();rtShow();})();
 loadAll().then(()=>{renderPick();buildDash();});
 </script>
 <script>
