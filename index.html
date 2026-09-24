@@ -239,7 +239,7 @@ textarea{min-height:50px;resize:vertical}
 <div class="card" id="wreview"><div class="empty">Loading week…</div></div>
   <div class="rings">
     <div class="ring"><svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="42"></circle><circle class="ring-fg" id="r-week" cx="50" cy="50" r="42" stroke="#ffc220"></circle></svg><div class="ring-label"><b id="r-week-c">0/4</b><span>workouts</span></div><div class="cap">this week</div></div>
-    <div class="ring"><svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="42"></circle><circle class="ring-fg" id="r-prot" cx="50" cy="50" r="42" stroke="#c9ccd2"></circle></svg><div class="ring-label"><b id="r-prot-c">--</b><span>/170g</span></div><div class="cap">protein today</div></div>
+    <div class="ring"><svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="42"></circle><circle class="ring-fg" id="r-prot" cx="50" cy="50" r="42" stroke="#c9ccd2"></circle></svg><div class="ring-label"><b id="r-prot-c">--</b><span>/100g</span></div><div class="cap">protein today</div></div>
     <div class="ring"><svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="42"></circle><circle class="ring-fg" id="r-bhutan" cx="50" cy="50" r="42" stroke="#ffc220"></circle></svg><div class="ring-label"><b id="r-bhutan-c">--</b><span>days</span></div><div class="cap">to Bali</div></div>
   </div>
   <div class="card"><h2>Sleep <span class="mut">· quality &amp; hours</span></h2><div id="sleepbox"></div><div class="chartbox" style="margin-top:12px"><canvas id="slchart"></canvas></div><div class="hint">Deep + REM are your recovery stages — 7-night trend above.</div></div>
@@ -257,7 +257,7 @@ textarea{min-height:50px;resize:vertical}
     <div style="text-align:right"><div style="color:var(--muted);font-size:11px">body fat</div><b id="m-bfp" style="font-size:18px">--</b><span style="color:var(--muted);font-size:12px">%</span><div style="color:var(--muted);font-size:11px;margin-top:4px">goal ~180 lb 🌴</div></div>
   </div>
   <div class="card">
-    <h2>Today's protein <span class="mut">· goal 150-170g</span></h2>
+    <h2>Today's protein <span class="mut">· goal 100g</span></h2>
     <div class="protrow">
       <div class="protbar"><div class="protfill" id="m-protfill"></div></div>
       <div class="celebrate" id="celebrate">
@@ -285,12 +285,13 @@ textarea{min-height:50px;resize:vertical}
     <b id="m-water" style="display:none">--</b>
   </div>
   <div class="card">
-    <h2 style="margin:0 0 10px">🔥 Today's activity <span class="mut" style="font-weight:400;font-size:12px">· auto-synced</span></h2>
-    <div class="cards">
-      <div class="stat"><b id="m-steps">--</b><span>steps</span></div>
-      <div class="stat"><b id="m-acal">--</b><span>active cal</span></div>
-      <div class="stat"><b id="m-exmin">--</b><span>exercise min</span></div>
-    </div>
+    <h2 style="margin:0 0 12px">🔥 Today's activity <span class="mut" style="font-weight:400;font-size:12px">· auto-synced</span></h2>
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:13px">👟 Steps <b id="m-steps" style="margin-left:4px">--</b></span><span id="m-steps-g" style="color:var(--muted);font-size:11px"></span></div>
+    <div class="protbar" style="margin-top:5px;height:9px"><div class="protfill" id="m-stepsfill" style="width:0;background:#ff375f"></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:14px"><span style="font-size:13px">🔥 Active cal <b id="m-acal" style="margin-left:4px">--</b></span><span id="m-acal-g" style="color:var(--muted);font-size:11px"></span></div>
+    <div class="protbar" style="margin-top:5px;height:9px"><div class="protfill" id="m-acalfill" style="width:0;background:#a3e635"></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:14px"><span style="font-size:13px">⏱️ Exercise <b id="m-exmin" style="margin-left:4px">--</b> min</span><span id="m-exmin-g" style="color:var(--muted);font-size:11px"></span></div>
+    <div class="protbar" style="margin-top:5px;height:9px"><div class="protfill" id="m-exminfill" style="width:0;background:#22d3ee"></div></div>
   </div>
   <div class="card">
     <h2 style="margin:0 0 8px">😴 Last night's sleep <span class="mut" id="m-sleep" style="font-weight:400;font-size:12px"></span></h2>
@@ -303,7 +304,7 @@ textarea{min-height:50px;resize:vertical}
     <div class="hint">Calories out = BMR (~1,844) + active calories. An estimate to guide deficit, not a precise number.</div>
   </div>
   <div class="card">
-    <div class="chatnote">🍽 <b>Log a meal — no typing, no math.</b> Snap a photo of your food or just say what you ate, and Claude logs it for you.</div><a href="https://claude.ai/project/01a0a47c-1d7a-7032-b08c-437df34d8a28" target="_blank" rel="noopener" id="m-openchat" style="display:block;text-decoration:none;text-align:center;margin-top:14px;background:var(--gold);color:#1a1a1a;font-size:18px;font-weight:800;padding:18px;border-radius:14px">📸 Log a Meal</a><button id="m-refresh" class="save" style="margin-top:12px">↻ Refresh data</button><div id="m-sync" style="margin-top:8px;color:var(--muted);font-size:11px"></div>
+    <a href="https://claude.ai/project/01a0a47c-1d7a-7032-b08c-437df34d8a28" target="_blank" rel="noopener" id="m-openchat" style="display:block;text-decoration:none;text-align:center;margin-top:14px;background:var(--gold);color:#1a1a1a;font-size:18px;font-weight:800;padding:18px;border-radius:14px">📸 Log a Meal</a><button id="m-refresh" class="save" style="display:block;width:100%;margin-top:12px;padding:16px;border-radius:14px;font-size:16px;font-weight:700">↻ Refresh data</button><div id="m-sync" style="margin-top:8px;color:var(--muted);font-size:11px"></div>
   </div>
 </section>
 </div>
@@ -312,7 +313,7 @@ textarea{min-height:50px;resize:vertical}
 const BASE="appr9O2IrOrP1pAwV",T_WORK="tblVpqMo497F00xLS",T_BODY="tblaKj2PdI3DVuk2b",T_NUTR="tblzXITeHr59KLq5M";
 const SRV="mcp__e8f47cef-230d-4dc4-a542-bff1517b5884__";
 const F={date:"fldDGMA7yjq8Ak4d9",workout:"fldAOl0ZJuazhgeOy",ex:"fldQPQEzpX2PXlyOR",wt:"fldVOEDNLDQQ3fQYM",reps:"fldN5mT5CMX4GfMlu",sets:"fldvmtL5Hm3nyp5f9",rpe:"fldiLRMbQbouG2YWH",kd:"fldBXEVK8zfAWNG77",k2:"fldDKaybYtmPIU1F8",kam:"fldccvWcFxDWP2pvu",eb:"fldJpWfjRImXJTsAs",ea:"fldGCOK5XPqZgg1IP",notes:"fldzwWNgYcMus6MZG"};
-const BF={date:"fldg1VyohIDppo0YI",wt:"fld8bG1Y7ubsMlZn9",bfp:"fld3M4unNnyABGXEV",bmi:"fld94Ym1Z9cblJL9k"};const NF={date:"fldC0f1R1E2kf5dnf",prot:"fldyFlZjhIF078BAt",cal:"fldgRIsOhbDsVzECe",carb:"fld7MpfbrD4OQ467E",fat:"fldpzTGTKN5lsFF2v",water:"fldtDj7WpMwFtU10O",daytype:"fldlo0zwfbimqvuHm",notes:"fldD2RPWwGNyC6Nka",steps:"fldWZyh0ykbotISUd",acal:"fldQRUqW7QJUg2SgS",exmin:"fldQlxXRpuWasCCF6",sleep:"fldRXZhQXFCdtwWok",deep:"fldG4MAxj26XGKyTN",rem:"fld8vn0f7HRgilT6w",core:"fldrN9mV1wcYukokZ",awake:"fld03mkQtb6nZ4TNd"};const PROT_GOAL2=170,PROT_MIN=150,BMR=1844;
+const BF={date:"fldg1VyohIDppo0YI",wt:"fld8bG1Y7ubsMlZn9",bfp:"fld3M4unNnyABGXEV",bmi:"fld94Ym1Z9cblJL9k"};const NF={date:"fldC0f1R1E2kf5dnf",prot:"fldyFlZjhIF078BAt",cal:"fldgRIsOhbDsVzECe",carb:"fld7MpfbrD4OQ467E",fat:"fldpzTGTKN5lsFF2v",water:"fldtDj7WpMwFtU10O",daytype:"fldlo0zwfbimqvuHm",notes:"fldD2RPWwGNyC6Nka",steps:"fldWZyh0ykbotISUd",acal:"fldQRUqW7QJUg2SgS",exmin:"fldQlxXRpuWasCCF6",sleep:"fldRXZhQXFCdtwWok",deep:"fldG4MAxj26XGKyTN",rem:"fld8vn0f7HRgilT6w",core:"fldrN9mV1wcYukokZ",awake:"fld03mkQtb6nZ4TNd"};const PROT_GOAL2=100,PROT_MIN=100,BMR=1844;
 const T_HIKE="tblt3RKQG3BkolDBV";const HK={date:"fldsBqGeiurmCjAOe",route:"fldMmIFBw7r2YxGCY",dist:"fldHm5ud6p0YBc01B",elev:"fldyllXT4N1qXaUSV",time:"fldmE9mVQYUHPrmj0",ahr:"fld1yt4g75ML8fRHB",mhr:"fldCgZ5lDyKc7RQNG",climb:"fldBKZjlK3mzImQXH",down:"fldCZ1sh9MMBKMwNr",breath:"fldAZtZvax3UkSUPc",legfat:"fld7LRk0sQ9aKXEI7",kd:"fld69Zds7A8Fmes97",kl:"fldwo3FK0DLWj1ARp",kam:"fldQrFdko2ejrZ2D7",water:"fldMfFMWcihL9Zukn",notes:"fldntP2qexMtgqZR3"};const T_REFL="tblk6ciYsJ67iIAZi";const RF={week:"fldlPifFl2NjOjiBt",ending:"fldaDAG26nTUy6vgP",workouts:"fldyvj3d1iUj9b06H",protdays:"fldqmOhKgBqufwALD",avgdef:"fldmturtEQE01NHh1",wtchg:"fldvd0yIXjpTpoitf",refl:"fldt1ltTbV3SnCwcA",snap:"fldXdZWWLnZ1C3p6X"};
 const WORKOUTS={
   A:[["Step-Ups","3 x 10/leg"],["Overhead Press","3 x 10"],["Assisted Pull-Ups","3 x 6-8"],["Hip Thrust","3 x 10-12"],["Side Plank Reach-Through","3 x 10/side"],["Tib Bar Raises","3 x 12"]],
@@ -335,7 +336,7 @@ const ICONS={
 const EXICON={"Step-Ups":"stairs","Tempo Step-Downs":"stairs","Goblet Squat":"kettlebell","Thrusters":"kettlebell","Overhead Press":"dumbbell","Bench Press":"dumbbell","Assisted Pull-Ups":"pullbar","Single-Arm Row":"pullbar","Chest-Supported Row":"pullbar","Hip Thrust":"hinge","Romanian Deadlift":"hinge","Side Plank Reach-Through":"core","Reverse Sit-Ups":"core","Hanging Knee Raises":"core","Tib Bar Raises":"foot","Dumbbell Curls":"dumbbell","Hammer Curls":"dumbbell","Triceps Extensions":"dumbbell"};
 ICONS.mountain='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19h18L14.5 8l-3.2 5-2.3-3z"/><path d="M12 13l2.5-5"/></svg>';const WICON={A:"dumbbell",B:"kettlebell",C:"bolt",D:"mountain"};
 
-const C2PI=2*Math.PI*42,RT_C=2*Math.PI*44,PROT_GOAL=170,PREP_START=pdLocal("2026-09-22"),BHUTAN=pdLocal("2026-10-13");
+const C2PI=2*Math.PI*42,RT_C=2*Math.PI*44,PROT_GOAL=100,PREP_START=pdLocal("2026-09-22"),BHUTAN=pdLocal("2026-10-13");
 let workRecs=[],bodyRecs=[],nutrRecs=[],hikeRecs=[],curW=null,curEx=null;
 function parse(r){if(!r)return {records:[]};if(r.isError)throw new Error("e");let d=r.structuredContent;if(!d&&r.content&&r.content[0]&&r.content[0].text){try{d=JSON.parse(r.content[0].text);}catch(e){d={records:[]};}}return d||{records:[]};}
 const ENGINE_URL="https://script.google.com/macros/s/AKfycby_EnxaiMC6NeiOU13KMzkYFTLrqGD4GtJknsfWvmpCVeX6olCke24MiWZV-4Jr0GfNvw/exec";
@@ -594,7 +595,7 @@ function renderMealWeight(){var last=null,prev=null,bfp=null;bodyRecs.forEach(fu
 function renderMeals(){const _md=document.getElementById("m-date");const ts=(_md&&_md.value)||todayS();const r=nutrRecs.find(x=>(cv(x)[NF.date]||"")===ts);const c=r?cv(r):{};
  const prot=c[NF.prot]||0,cal=c[NF.cal]||0,carb=c[NF.carb]||0,fat=c[NF.fat]||0,wat=c[NF.water]||0,acal=c[NF.acal]||0;
  document.getElementById("m-prot").textContent=prot+" g";document.getElementById("m-protfill").style.width=Math.min(100,prot/PROT_GOAL2*100)+"%";
- document.getElementById("m-protleft").textContent=prot>=PROT_MIN?"\u2713 minimum hit":((PROT_MIN-prot)+"g to 150 min");
+ document.getElementById("m-protleft").textContent=prot>=PROT_MIN?"\u2713 goal hit":((PROT_MIN-prot)+"g to 100");
  document.getElementById("m-cal").textContent=cal||"--";document.getElementById("m-carbs").textContent=carb||"--";document.getElementById("m-fat").textContent=fat||"--";document.getElementById("m-water").textContent=wat||"--";
  var GRN="#3fb950",RED="#f85149",BLU="#58a6ff";
  var calBudget=Math.max(1600,BMR+acal-500);
@@ -605,9 +606,9 @@ function renderMeals(){const _md=document.getElementById("m-date");const ts=(_md
  _sb("m-fatfill",fat/65*100,fat<=65?GRN:RED);
  _txt("m-fat-sub",fat?(fat<=65?(Math.round(65-fat)+" under cap"):(Math.round(fat-65)+" over cap")):"cap 65");
  renderWaterCups(wat,ts);
- _txt("m-steps",c[NF.steps]!=null?Number(c[NF.steps]).toLocaleString():"--");
- _txt("m-acal",c[NF.acal]!=null?c[NF.acal]:"--");
- _txt("m-exmin",c[NF.exmin]!=null?c[NF.exmin]:"--");
+ var _st=(c[NF.steps]!=null?Number(c[NF.steps]):0),_ac=(c[NF.acal]!=null?Number(c[NF.acal]):0),_ex=(c[NF.exmin]!=null?Number(c[NF.exmin]):0);_txt("m-steps",c[NF.steps]!=null?_st.toLocaleString():"--");_sb("m-stepsfill",_st/10000*100);_txt("m-steps-g","goal 10,000");
+ _txt("m-acal",c[NF.acal]!=null?_ac:"--");_sb("m-acalfill",_ac/750*100);_txt("m-acal-g","goal 750");
+ _txt("m-exmin",c[NF.exmin]!=null?_ex:"--");_sb("m-exminfill",_ex/45*100);_txt("m-exmin-g","goal 45");
  renderMealSleep(ts);
  renderMealWeight();
  const wk=[...new Set(workRecs.filter(x=>cv(x)[F.date]===ts).map(x=>{const w=cv(x)[F.workout];return w&&w.name?w.name:w;}).filter(Boolean))].map(w=>"Workout "+w);
@@ -623,7 +624,7 @@ function renderMeals(){const _md=document.getElementById("m-date");const ts=(_md
   '<div class="eodrow"><span>Active calories</span><b>'+(acal?acal:"--")+'</b></div>'+
   '<div class="eodrow"><span>Calories out (est)</span><b>'+out+'</b></div>'+
   '<div class="eodrow big '+(cal?cls:"")+'"><span>'+(cal?defLabel:"Deficit")+'</span><b>'+(cal?Math.abs(deficit)+" cal":"log meals")+'</b></div>'+
-  '<div class="eodrow"><span>Protein</span><b>'+prot+' / 150-170g '+(prot>=PROT_MIN?"\u2713":"")+'</b></div>'+
+  '<div class="eodrow"><span>Protein</span><b>'+prot+' / 100g '+(prot>=PROT_MIN?"\u2713":"")+'</b></div>'+
   '<div class="eodrow"><span>Water</span><b>'+(wat?wat+" oz":"--")+'</b></div>';
  const hit=prot>=PROT_MIN&&cal>0&&(BMR+acal-cal)>=0;document.getElementById("celebrate").classList.toggle("show",hit);var _cc=document.getElementById("celebcap");if(_cc)_cc.textContent=hit?"YOU DID IT!":"GOAL";const _sc=document.getElementById("m-sync");if(_sc)_sc.textContent="Synced: "+nutrRecs.length+" meal day(s) · "+workRecs.length+" exercise log(s) · "+hikeRecs.length+" hike(s).";
 }
@@ -643,7 +644,7 @@ function shiftDay(n){var b=pdLocal(curDate())||new Date();b.setDate(b.getDate()+
 document.getElementById("d-prev").onclick=function(){shiftDay(-1);};
 document.getElementById("d-next").onclick=function(){shiftDay(1);};
 document.getElementById("d-today").onclick=function(){document.getElementById("date").value=ymd(new Date());dateRefresh();};
-(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V25 · UP TO DATE";swShow();renderPick();rtShow();})();
+(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V26 · UP TO DATE";swShow();renderPick();rtShow();})();
 async function logFromUrl(){try{var q=new URLSearchParams(location.search);if(!q.get("mlog"))return;var d=q.get("d")||todayS();var p=parseFloat(q.get("p"))||0,cal=parseFloat(q.get("cal"))||0,cb=parseFloat(q.get("cb"))||0,f=parseFloat(q.get("f"))||0;var food=q.get("food")||"";if(p<=0&&cal<=0&&cb<=0&&f<=0)return;try{history.replaceState(null,"","./");}catch(e){}var params="action=meal&d="+encodeURIComponent(d)+"&p="+p+"&cal="+cal+"&cb="+cb+"&f="+f;if(food)params+="&note="+encodeURIComponent(food);var rec=await jsonp(params);if(rec&&rec.error)throw new Error(rec.error);await loadAll();try{var mt=document.querySelector('.tab[data-tab="meals"]');if(mt){mt.click();}}catch(e){}try{renderMeals();buildDash();}catch(e){}toast((food?food:"Meal")+" logged ✓  +"+cal+" cal");}catch(e){toast("Couldn't log — open Meals · tap Refresh");}}
 loadAll().then(()=>{renderPick();buildDash();logFromUrl();});
 (function(){try{var a=document.getElementById("m-openchat");if(!a)return;var P="Log this meal. Estimate the macros for the food I send (photo or text), then reply with ONLY this tappable link, filled in (URL-encode the food name): https://epicstrark-cmd.github.io/cecret-fitness/?mlog=1&p=PROTEIN&cal=CALORIES&cb=CARBS&f=FAT&food=NAME then add a short line 'Tap to log 👆'. Do NOT fetch anything and do NOT use Airtable. My meal: ";a.href="https://claude.ai/project/01a0a47c-1d7a-7032-b08c-437df34d8a28?q="+encodeURIComponent(P);}catch(e){}})();
