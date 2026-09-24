@@ -266,11 +266,15 @@ textarea{min-height:50px;resize:vertical}
     <div style="display:flex;justify-content:space-between;margin-top:9px;align-items:baseline"><b id="m-prot" style="font-size:23px;color:var(--gold)">0 g</b><span id="m-protleft" style="color:var(--muted);font-size:12px"></span></div>
     <div id="celebcap" style="text-align:right;font-size:9px;font-weight:800;color:var(--muted);letter-spacing:.6px;margin-top:3px">GOAL</div>
   </div>
-  <div class="cards">
-    <div class="stat"><b id="m-cal">--</b><span>calories in</span></div>
-    <div class="stat"><b id="m-carbs">--</b><span>carbs (g)</span></div>
-    <div class="stat"><b id="m-fat">--</b><span>fat (g)</span></div>
-    <div class="stat"><b id="m-water">--</b><span>water (oz)</span></div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="color:var(--muted);font-size:13px">Calories in <em id="m-cal-sub" style="font-style:normal;font-size:11px;margin-left:4px;color:var(--muted)"></em></span><b id="m-cal" style="font-size:18px">--</b></div>
+    <div class="protbar" style="margin-top:6px;height:8px"><div class="protfill" id="m-calfill" style="width:0"></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:14px"><span style="color:var(--muted);font-size:13px">Carbs (g) <em id="m-carbs-sub" style="font-style:normal;font-size:11px;margin-left:4px;color:var(--muted)"></em></span><b id="m-carbs" style="font-size:18px">--</b></div>
+    <div class="protbar" style="margin-top:6px;height:8px"><div class="protfill" id="m-carbfill" style="width:0"></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:14px"><span style="color:var(--muted);font-size:13px">Fat (g) <em id="m-fat-sub" style="font-style:normal;font-size:11px;margin-left:4px;color:var(--muted)"></em></span><b id="m-fat" style="font-size:18px">--</b></div>
+    <div class="protbar" style="margin-top:6px;height:8px"><div class="protfill" id="m-fatfill" style="width:0"></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:14px"><span style="color:var(--muted);font-size:13px">Water (oz) <em id="m-water-sub" style="font-style:normal;font-size:11px;margin-left:4px;color:var(--muted)"></em></span><b id="m-water" style="font-size:18px">--</b></div>
+    <div class="protbar" style="margin-top:6px;height:8px"><div class="protfill" id="m-waterfill" style="width:0;background:#58a6ff"></div></div>
   </div>
   <div class="card">
     <h2>End of Day Report</h2>
@@ -560,11 +564,23 @@ function buildActivity(){
   var ee=document.getElementById("a-exmin");if(ee)ee.textContent=e!=null?e:"--";
 }
 function todayS(){return ymd(new Date());}
+function _sb(id,pct,color){var el=document.getElementById(id);if(!el)return;el.style.width=Math.max(0,Math.min(100,pct))+"%";if(color)el.style.background=color;}
+function _txt(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
 function renderMeals(){const _md=document.getElementById("m-date");const ts=(_md&&_md.value)||todayS();const r=nutrRecs.find(x=>(cv(x)[NF.date]||"")===ts);const c=r?cv(r):{};
  const prot=c[NF.prot]||0,cal=c[NF.cal]||0,carb=c[NF.carb]||0,fat=c[NF.fat]||0,wat=c[NF.water]||0,acal=c[NF.acal]||0;
  document.getElementById("m-prot").textContent=prot+" g";document.getElementById("m-protfill").style.width=Math.min(100,prot/PROT_GOAL2*100)+"%";
  document.getElementById("m-protleft").textContent=prot>=PROT_MIN?"\u2713 minimum hit":((PROT_MIN-prot)+"g to 150 min");
  document.getElementById("m-cal").textContent=cal||"--";document.getElementById("m-carbs").textContent=carb||"--";document.getElementById("m-fat").textContent=fat||"--";document.getElementById("m-water").textContent=wat||"--";
+ var GRN="#3fb950",RED="#f85149",BLU="#58a6ff";
+ var calBudget=Math.max(1600,BMR+acal-500);
+ _sb("m-calfill",cal/calBudget*100,cal<=calBudget?GRN:RED);
+ _txt("m-cal-sub",cal?(cal<=calBudget?(Math.round(calBudget-cal)+" left of "+Math.round(calBudget)):(Math.round(cal-calBudget)+" over")):("budget "+Math.round(calBudget)));
+ _sb("m-carbfill",carb/175*100,carb<=175?GRN:RED);
+ _txt("m-carbs-sub",carb?(carb<=175?(Math.round(175-carb)+" under cap"):(Math.round(carb-175)+" over cap")):"cap 175");
+ _sb("m-fatfill",fat/65*100,fat<=65?GRN:RED);
+ _txt("m-fat-sub",fat?(fat<=65?(Math.round(65-fat)+" under cap"):(Math.round(fat-65)+" over cap")):"cap 65");
+ _sb("m-waterfill",wat/80*100,BLU);
+ _txt("m-water-sub",wat?(wat>=80?"✓ goal hit":(Math.round(80-wat)+" to 80")):"goal 80");
  const wk=[...new Set(workRecs.filter(x=>cv(x)[F.date]===ts).map(x=>{const w=cv(x)[F.workout];return w&&w.name?w.name:w;}).filter(Boolean))].map(w=>"Workout "+w);
  const ht=hikeRecs.find(x=>(cv(x)[HK.date]||"")===ts);if(ht){const di=cv(ht)[HK.dist];wk.push("Hike"+(di?" "+di+" mi":""));}
  const trained=wk.length?wk.join(", "):"Rest / not logged";
@@ -598,7 +614,7 @@ function shiftDay(n){var b=pdLocal(curDate())||new Date();b.setDate(b.getDate()+
 document.getElementById("d-prev").onclick=function(){shiftDay(-1);};
 document.getElementById("d-next").onclick=function(){shiftDay(1);};
 document.getElementById("d-today").onclick=function(){document.getElementById("date").value=ymd(new Date());dateRefresh();};
-(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V23 · UP TO DATE";swShow();renderPick();rtShow();})();
+(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V24 · UP TO DATE";swShow();renderPick();rtShow();})();
 async function logFromUrl(){try{var q=new URLSearchParams(location.search);if(!q.get("mlog"))return;var d=q.get("d")||todayS();var p=parseFloat(q.get("p"))||0,cal=parseFloat(q.get("cal"))||0,cb=parseFloat(q.get("cb"))||0,f=parseFloat(q.get("f"))||0;var food=q.get("food")||"";if(p<=0&&cal<=0&&cb<=0&&f<=0)return;try{history.replaceState(null,"","./");}catch(e){}var params="action=meal&d="+encodeURIComponent(d)+"&p="+p+"&cal="+cal+"&cb="+cb+"&f="+f;if(food)params+="&note="+encodeURIComponent(food);var rec=await jsonp(params);if(rec&&rec.error)throw new Error(rec.error);await loadAll();try{var mt=document.querySelector('.tab[data-tab="meals"]');if(mt){mt.click();}}catch(e){}try{renderMeals();buildDash();}catch(e){}toast((food?food:"Meal")+" logged ✓  +"+cal+" cal");}catch(e){toast("Couldn't log — open Meals · tap Refresh");}}
 loadAll().then(()=>{renderPick();buildDash();logFromUrl();});
 (function(){try{var a=document.getElementById("m-openchat");if(!a)return;var P="Log this meal. Estimate the macros for the food I send (photo or text), then reply with ONLY this tappable link, filled in (URL-encode the food name): https://epicstrark-cmd.github.io/cecret-fitness/?mlog=1&p=PROTEIN&cal=CALORIES&cb=CARBS&f=FAT&food=NAME then add a short line 'Tap to log 👆'. Do NOT fetch anything and do NOT use Airtable. My meal: ";a.href="https://claude.ai/project/01a0a47c-1d7a-7032-b08c-437df34d8a28?q="+encodeURIComponent(P);}catch(e){}})();
