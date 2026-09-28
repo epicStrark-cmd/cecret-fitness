@@ -144,6 +144,7 @@ textarea{min-height:50px;resize:vertical}
   <button class="tab" data-tab="meals">🍽 Meals</button>
   <button class="tab" data-tab="dash">📊 Dash</button>
 </div>
+<button id="g-refresh" style="display:block;width:100%;margin:14px 0 0;padding:14px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);color:var(--gold);font-weight:800;font-size:15px;-webkit-tap-highlight-color:transparent">↻ Refresh my data</button>
 
 <section id="log">
   <div id="scr-pick">
@@ -642,6 +643,7 @@ function renderMeals(){const _md=document.getElementById("m-date");const ts=(_md
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");const tab=t.dataset.tab;document.getElementById("log").style.display=tab==="log"?"block":"none";document.getElementById("dash").style.display=tab==="dash"?"block":"none";document.getElementById("meals").style.display=tab==="meals"?"block":"none";if(tab==="dash")buildDash();if(tab==="meals"){const md=document.getElementById("m-date");if(md&&!md.value)md.value=todayS();renderMeals();}});
 document.getElementById("m-refresh").onclick=async()=>{const b=document.getElementById("m-refresh");b.disabled=true;b.textContent="Refreshing…";await loadAll();renderMeals();buildDash();b.disabled=false;b.textContent="↻ Refresh data";};
 document.getElementById("m-date").onchange=renderMeals;
+var _gr=document.getElementById("g-refresh");if(_gr)_gr.onclick=async function(){var t=_gr.textContent;_gr.disabled=true;_gr.textContent="⟳ Refreshing…";try{await loadAll();renderPick();buildDash();renderMeals();}catch(e){}_gr.disabled=false;_gr.textContent=t;};
 var MEAL_FOODS=[{n:"Banana",p:1,cal:105,cb:27,f:0},{n:"2 Eggs",p:12,cal:144,cb:1,f:10},{n:"Chicken 6oz",p:52,cal:280,cb:0,f:6},{n:"Rice 1cup",p:4,cal:205,cb:45,f:0},{n:"Protein shake",p:30,cal:160,cb:5,f:2},{n:"Greek yogurt",p:15,cal:150,cb:8,f:4},{n:"Oatmeal",p:5,cal:150,cb:27,f:3},{n:"Apple",p:0,cal:95,cb:25,f:0},{n:"PB 2 tbsp",p:8,cal:190,cb:8,f:16},{n:"Almonds 1oz",p:6,cal:164,cb:6,f:14}];
 function mlNum(id){var v=parseFloat(document.getElementById(id).value);return isNaN(v)?0:v;}
 function mlSet(id,v){document.getElementById(id).value=v?(Math.round(v*10)/10):"";}
@@ -655,7 +657,7 @@ function shiftDay(n){var b=pdLocal(curDate())||new Date();b.setDate(b.getDate()+
 document.getElementById("d-prev").onclick=function(){shiftDay(-1);};
 document.getElementById("d-next").onclick=function(){shiftDay(1);};
 document.getElementById("d-today").onclick=function(){document.getElementById("date").value=ymd(new Date());dateRefresh();};
-(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V39 · UP TO DATE";swShow();renderPick();rtShow();})();
+(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V40 · UP TO DATE";swShow();renderPick();rtShow();})();
 async function logFromUrl(){try{var q=new URLSearchParams(location.search);if(!q.get("mlog"))return;var d=q.get("d")||todayS();var p=parseFloat(q.get("p"))||0,cal=parseFloat(q.get("cal"))||0,cb=parseFloat(q.get("cb"))||0,f=parseFloat(q.get("f"))||0;var food=q.get("food")||"";if(p<=0&&cal<=0&&cb<=0&&f<=0)return;try{history.replaceState(null,"","./");}catch(e){}var params="action=meal&d="+encodeURIComponent(d)+"&p="+p+"&cal="+cal+"&cb="+cb+"&f="+f;if(food)params+="&note="+encodeURIComponent(food);var rec=await jsonp(params);if(rec&&rec.error)throw new Error(rec.error);await loadAll();try{var mt=document.querySelector('.tab[data-tab="meals"]');if(mt){mt.click();}}catch(e){}try{renderMeals();buildDash();}catch(e){}toast((food?food:"Meal")+" logged ✓  +"+cal+" cal");}catch(e){toast("Couldn't log — open Meals · tap Refresh");}}
 try{var _c=JSON.parse(localStorage.getItem("cf_all"));if(_c){workRecs=_c.work||[];bodyRecs=_c.body||[];nutrRecs=_c.nutr||[];hikeRecs=_c.hike||[];reflRecs=_c.refl||[];renderPick();buildDash();try{renderMeals();}catch(e){}}}catch(e){}
 loadAll().then(()=>{renderPick();buildDash();logFromUrl();try{renderMeals();}catch(e){}});
