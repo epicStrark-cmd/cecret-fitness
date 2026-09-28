@@ -357,15 +357,16 @@ function renderOfflineBanner(){try{var el=document.getElementById("offbar");if(!
 async function retryLoad(){try{await loadAll();renderPick();buildDash();try{renderMeals();}catch(e){}}catch(e){}}
 async function reconnect(){await retryLoad();}
 async function jsonpRetry(params,tries){var last;tries=tries||4;for(var i=0;i<tries;i++){try{return await jsonp(params);}catch(e){last=e;await new Promise(function(r){setTimeout(r,1200);});}}throw last;}
+function setSyncStatus(st){var el=document.getElementById("syncbar");if(!el){el=document.createElement("div");el.id="syncbar";el.style.cssText="position:fixed;left:0;right:0;top:0;z-index:9998;font:700 12px -apple-system,BlinkMacSystemFont,sans-serif;text-align:center;padding:calc(env(safe-area-inset-top,0px) + 7px) 12px 7px;transition:opacity .3s ease";document.body.appendChild(el);}clearTimeout(window._syncT);if(st==="loading"){el.style.background="#12263a";el.style.color="#7db8ff";el.textContent="⟳ Getting your latest data…";el.style.display="block";el.style.opacity="1";}else if(st==="done"){el.style.background="#0f2a17";el.style.color="#3fb950";el.textContent="✓ Up to date · just now";el.style.display="block";el.style.opacity="1";window._syncT=setTimeout(function(){el.style.opacity="0";window._syncT=setTimeout(function(){el.style.display="none";},350);},2200);}else{el.style.display="none";}}
 async function loadAll(){
-  OFFLINE=false;AUTH_FAIL=false;
+  OFFLINE=false;AUTH_FAIL=false;setSyncStatus("loading");
   try{
     var r=await jsonpRetry("action=read",5);
     if(!r||r.error)throw new Error(r&&r.error||"read");
     function bd(a,fid){return (a||[]).sort(function(x,y){var p=(x.cellValuesByFieldId||{})[fid]||"",q=(y.cellValuesByFieldId||{})[fid]||"";return p<q?-1:(p>q?1:0);});}
     workRecs=bd(r.work,F.date);bodyRecs=bd(r.body,BF.date);nutrRecs=bd(r.nutr,NF.date);hikeRecs=bd(r.hike,HK.date);reflRecs=r.refl||[];
-    try{localStorage.setItem("cf_all",JSON.stringify(r));localStorage.setItem("cf_synced",new Date().toISOString());}catch(e){}
-  }catch(e){OFFLINE=true;try{var c=JSON.parse(localStorage.getItem("cf_all"));if(c){workRecs=c.work||[];bodyRecs=c.body||[];nutrRecs=c.nutr||[];hikeRecs=c.hike||[];reflRecs=c.refl||[];}}catch(_){}}
+    try{localStorage.setItem("cf_all",JSON.stringify(r));localStorage.setItem("cf_synced",new Date().toISOString());}catch(e){}setSyncStatus("done");
+  }catch(e){OFFLINE=true;setSyncStatus("hide");try{var c=JSON.parse(localStorage.getItem("cf_all"));if(c){workRecs=c.work||[];bodyRecs=c.body||[];nutrRecs=c.nutr||[];hikeRecs=c.hike||[];reflRecs=c.refl||[];}}catch(_){}}
   renderOfflineBanner();
 }
 function recName(c){const e=c[F.ex];return e&&e.name?e.name:e;}
@@ -654,7 +655,7 @@ function shiftDay(n){var b=pdLocal(curDate())||new Date();b.setDate(b.getDate()+
 document.getElementById("d-prev").onclick=function(){shiftDay(-1);};
 document.getElementById("d-next").onclick=function(){shiftDay(1);};
 document.getElementById("d-today").onclick=function(){document.getElementById("date").value=ymd(new Date());dateRefresh();};
-(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V38 · UP TO DATE";swShow();renderPick();rtShow();})();
+(function init(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}document.getElementById("date").value=ymd(new Date());document.getElementById("cd").textContent=daysToBhutan();var _vt=document.getElementById("vertag");if(_vt)_vt.textContent="CECRET V39 · UP TO DATE";swShow();renderPick();rtShow();})();
 async function logFromUrl(){try{var q=new URLSearchParams(location.search);if(!q.get("mlog"))return;var d=q.get("d")||todayS();var p=parseFloat(q.get("p"))||0,cal=parseFloat(q.get("cal"))||0,cb=parseFloat(q.get("cb"))||0,f=parseFloat(q.get("f"))||0;var food=q.get("food")||"";if(p<=0&&cal<=0&&cb<=0&&f<=0)return;try{history.replaceState(null,"","./");}catch(e){}var params="action=meal&d="+encodeURIComponent(d)+"&p="+p+"&cal="+cal+"&cb="+cb+"&f="+f;if(food)params+="&note="+encodeURIComponent(food);var rec=await jsonp(params);if(rec&&rec.error)throw new Error(rec.error);await loadAll();try{var mt=document.querySelector('.tab[data-tab="meals"]');if(mt){mt.click();}}catch(e){}try{renderMeals();buildDash();}catch(e){}toast((food?food:"Meal")+" logged ✓  +"+cal+" cal");}catch(e){toast("Couldn't log — open Meals · tap Refresh");}}
 try{var _c=JSON.parse(localStorage.getItem("cf_all"));if(_c){workRecs=_c.work||[];bodyRecs=_c.body||[];nutrRecs=_c.nutr||[];hikeRecs=_c.hike||[];reflRecs=_c.refl||[];renderPick();buildDash();try{renderMeals();}catch(e){}}}catch(e){}
 loadAll().then(()=>{renderPick();buildDash();logFromUrl();try{renderMeals();}catch(e){}});
